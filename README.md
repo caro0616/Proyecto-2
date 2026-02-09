@@ -3,8 +3,8 @@
 - **Leidy Carolina Obando Figueroa**
 - **Diego Eduardo Chourio Garcia**
 - **Juan Pablo Padilla Carvajal**
-- **Tomas Posada** 
-- **Sebastian Rave**
+- **Tomas Posada Suarez** 
+- **Juan Sebastian Rave Martinez**
 
 # Depósito Dental Virtual Pitalito
 
