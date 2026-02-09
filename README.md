@@ -28,8 +28,14 @@ El depósito dental opera hoy con canales tradicionales (WhatsApp / asesor comer
 ---
 
 ## Problema y contexto
-- El proceso actual depende de atención humana para cotizar, confirmar disponibilidad, tomar pedidos y hacer seguimiento.
-- Esto limita escalabilidad, aumenta tiempos de respuesta y dificulta digitalizar inventario/ventas.
+El Depósito Dental Virtual Pitalito es un negocio dedicado a la comercialización de insumos odontológicos para clínicas, consultorios y profesionales de la salud oral.
+
+Actualmente, la operación del depósito se apoya principalmente en canales tradicionales como WhatsApp, asesor comercial y gestión manual de pedidos. Este modelo genera una alta dependencia de la atención humana para cotizar productos, confirmar disponibilidad, tomar pedidos y realizar seguimiento, lo que incrementa los tiempos de respuesta y limita la escalabilidad del negocio.
+
+Adicionalmente, los clientes no cuentan con un canal digital unificado que les permita consultar el catálogo completo, repetir compras frecuentes o conocer el estado de sus solicitudes. Esto dificulta la digitalización del inventario y de las ventas, afectando tanto la eficiencia operativa como la experiencia del cliente.
+
+Frente a esta problemática, se plantea el desarrollo de una plataforma web B2B que centralice el catálogo de productos y permita la gestión estructurada de pedidos y cotizaciones, reduciendo la intervención manual y optimizando los procesos comerciales del depósito.
+
 
 La solución propuesta es una plataforma web con:
 - catálogo público navegable y buscable
@@ -82,6 +88,7 @@ Fuera del MVP (fases posteriores):
 - Carrito (agregar/modificar cantidades)
 - Finalizar compra y ver confirmación
 - Historial y recompra (planeado)
+- Asistencia guiada para consulta y comparación de productos (fase futura)
 
 ### Administrador
 - Gestión de productos (CRUD)
