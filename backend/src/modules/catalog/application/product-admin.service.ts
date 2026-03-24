@@ -41,7 +41,11 @@ export class ProductAdminService {
     if (dto.category !== undefined) product.category = dto.category;
     if (dto.stock !== undefined) product.updateStock(dto.stock);
     if (dto.active !== undefined) {
-      dto.active ? product.activate() : product.deactivate();
+      if (dto.active) {
+        product.activate();
+      } else {
+        product.deactivate();
+      }
     }
 
     await this.productRepo.save(product);

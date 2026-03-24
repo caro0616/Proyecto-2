@@ -58,9 +58,7 @@ export class CatalogComponent implements OnInit {
     if (!category) {
       this.filteredProducts = this.products;
     } else {
-      this.filteredProducts = this.products.filter(
-        (p) => p.category === category,
-      );
+      this.filteredProducts = this.products.filter((p) => p.category === category);
     }
   }
 }

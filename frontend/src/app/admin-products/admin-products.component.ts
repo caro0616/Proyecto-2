@@ -94,10 +94,7 @@ export class AdminProductsComponent implements OnInit {
 
     if (this.editingId) {
       this.http
-        .put<Product>(
-          `${this.apiUrl}/admin/products/${this.editingId}`,
-          this.form,
-        )
+        .put<Product>(`${this.apiUrl}/admin/products/${this.editingId}`, this.form)
         .subscribe({
           next: () => {
             this.showForm = false;
@@ -110,18 +107,16 @@ export class AdminProductsComponent implements OnInit {
           },
         });
     } else {
-      this.http
-        .post<Product>(`${this.apiUrl}/admin/products`, this.form)
-        .subscribe({
-          next: () => {
-            this.showForm = false;
-            this.loadProducts();
-          },
-          error: () => {
-            this.error = 'Error al crear producto';
-            this.loading = false;
-          },
-        });
+      this.http.post<Product>(`${this.apiUrl}/admin/products`, this.form).subscribe({
+        next: () => {
+          this.showForm = false;
+          this.loadProducts();
+        },
+        error: () => {
+          this.error = 'Error al crear producto';
+          this.loading = false;
+        },
+      });
     }
   }
 

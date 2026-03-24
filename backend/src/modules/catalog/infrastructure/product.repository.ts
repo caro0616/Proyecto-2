@@ -25,9 +25,7 @@ export class InMemoryProductRepository extends ProductRepository {
   }
 
   async findByCategory(category: string): Promise<Product[]> {
-    return Array.from(this.products.values()).filter(
-      (p) => p.active && p.category === category,
-    );
+    return Array.from(this.products.values()).filter((p) => p.active && p.category === category);
   }
 
   async save(product: Product): Promise<void> {
