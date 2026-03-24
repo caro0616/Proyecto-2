@@ -1,0 +1,52 @@
+<section class="catalog">
+  <h1>Catálogo de Productos</h1>
+
+  <div *ngIf="loading" class="catalog__loading">Cargando productos...</div>
+  <p *ngIf="error" class="catalog__error">{{ error }}</p>
+
+  <div *ngIf="!loading && !error" class="catalog__content">
+    <div class="catalog__filters">
+      <button
+        [class.active]="selectedCategory === ''"
+        (click)="filterByCategory('')"
+      >
+        Todos
+      </button>
+      <button
+        *ngFor="let cat of categories"
+        [class.active]="selectedCategory === cat"
+        (click)="filterByCategory(cat)"
+      >
+        {{ cat }}
+      </button>
+    </div>
+
+    <p *ngIf="filteredProducts.length === 0" class="catalog__empty">
+      No hay productos disponibles.
+    </p>
+
+    <div class="catalog__grid">
+      <div *ngFor="let product of filteredProducts" class="catalog__card">
+        <img
+          [src]="product.imageUrl"
+          [alt]="product.name"
+          class="catalog__card-img"
+        />
+        <div class="catalog__card-body">
+          <span class="catalog__card-category">{{ product.category }}</span>
+          <h3 class="catalog__card-title">{{ product.name }}</h3>
+          <p class="catalog__card-desc">{{ product.description }}</p>
+          <div class="catalog__card-footer">
+            <strong>{{ product.price | currency: 'COP':'symbol-narrow':'1.0-0' }}</strong>
+            <span class="catalog__card-stock" *ngIf="product.stock > 0">
+              {{ product.stock }} disponibles
+            </span>
+            <span class="catalog__card-stock catalog__card-stock--out" *ngIf="product.stock === 0">
+              Agotado
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
