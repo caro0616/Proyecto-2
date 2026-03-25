@@ -7,7 +7,7 @@ export interface ProductProps {
   category: string;
   stock: number;
   active: boolean;
-  technicalSpecs: Record<string, string>; 
+  technicalSpecs: Record<string, string>;
   invimaRegistry: string;
 }
 
@@ -21,7 +21,7 @@ export class Product {
     public category: string,
     public stock: number,
     public active: boolean = true,
-    public technicalSpecs: Record<string, string> = {}, 
+    public technicalSpecs: Record<string, string> = {},
     public invimaRegistry: string,
   ) {}
 
