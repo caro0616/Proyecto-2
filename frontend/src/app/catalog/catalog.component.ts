@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 interface Product {
   id: string;
@@ -18,7 +19,7 @@ interface Product {
 @Component({
   selector: 'app-catalog',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './catalog.component.html',
   styleUrls: ['./catalog.component.scss'],
 })
@@ -27,6 +28,7 @@ export class CatalogComponent implements OnInit {
   filteredProducts: Product[] = [];
   categories: string[] = [];
   selectedCategory = '';
+  searchTerm = '';
   loading = false;
   error: string | null = null;
 
@@ -47,6 +49,7 @@ export class CatalogComponent implements OnInit {
         this.products = products;
         this.filteredProducts = products;
         this.categories = [...new Set(products.map((p) => p.category))];
+        this.applyFilters();
         this.loading = false;
       },
       error: () => {
@@ -58,11 +61,26 @@ export class CatalogComponent implements OnInit {
 
   filterByCategory(category: string): void {
     this.selectedCategory = category;
-    if (!category) {
-      this.filteredProducts = this.products;
-    } else {
-      this.filteredProducts = this.products.filter((p) => p.category === category);
+    this.applyFilters();
+  }
+
+  applyFilters(): void {
+    let filtered = this.products;
+    if (this.selectedCategory) {
+      filtered = filtered.filter((p) => p.category === this.selectedCategory);
     }
+    if (this.searchTerm) {
+      filtered = filtered.filter(
+        (p) =>
+          p.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+          p.description.toLowerCase().includes(this.searchTerm.toLowerCase()),
+      );
+    }
+    this.filteredProducts = filtered;
+  }
+
+  onSearchChange(): void {
+    this.applyFilters();
   }
 
   addToCart(product: Product, event: Event): void {

@@ -21,6 +21,24 @@
     border-radius: 8px;
   }
 
+  &__search {
+    margin-bottom: 1.5rem;
+
+    input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #bdc3c7;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+
+      &:focus {
+        outline: none;
+        border-color: #3498db;
+      }
+    }
+  }
+
   &__filters {
     display: flex;
     gap: 0.5rem;

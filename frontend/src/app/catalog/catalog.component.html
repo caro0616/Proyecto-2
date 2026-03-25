@@ -5,6 +5,15 @@
   <p *ngIf="error" class="catalog__error">{{ error }}</p>
 
   <div *ngIf="!loading && !error" class="catalog__content">
+    <div class="catalog__search">
+      <input
+        type="text"
+        placeholder="Buscar productos..."
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange()"
+      />
+    </div>
+
     <div class="catalog__filters">
       <button
         [class.active]="selectedCategory === ''"
