@@ -58,9 +58,9 @@ export class CatalogComponent implements OnInit {
   onSearch(): void {
     if (this.searchQuery.trim()) {
       this.http
-        .get<Product[]>(
-          `http://localhost:3000/products/search?query=${encodeURIComponent(this.searchQuery)}`
-        )
+        .get<
+          Product[]
+        >(`http://localhost:3000/products/search?query=${encodeURIComponent(this.searchQuery)}`)
         .subscribe({
           next: (data) => (this.filteredProducts = data),
           error: (err) => console.error('Error searching products:', err),
