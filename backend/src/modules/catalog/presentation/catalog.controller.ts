@@ -13,6 +13,11 @@ export class CatalogController {
     return this.catalogService.getPublicCatalog();
   }
 
+  @Get('categories')
+  async listCategories() {
+    return this.catalogService.getCategoriesWithCount();
+  }
+
   @Get(':id')
   async getProduct(@Param('id') id: string) {
     return this.catalogService.getProductById(id);

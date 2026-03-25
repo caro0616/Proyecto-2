@@ -59,6 +59,21 @@ export class MongooseProductRepository implements IProductRepository {
     return docs.map((doc) => this.toDomain(doc));
   }
 
+  async countByCategories(): Promise<Record<string, number>> {
+    const result = await this.productModel
+      .aggregate([
+        { $match: { active: true } },
+        { $group: { _id: '$category', count: { $sum: 1 } } },
+      ])
+      .exec();
+
+    const counts: Record<string, number> = {};
+    for (const item of result) {
+      counts[item._id as string] = item.count;
+    }
+    return counts;
+  }
+
   async save(product: Product): Promise<void> {
     const data = {
       sku: product.sku || `SKU-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
