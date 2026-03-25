@@ -24,7 +24,7 @@ async function bootstrap(): Promise<void> {
   app.enableCors({
     origin: corsOrigin,
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-user-id', 'x-admin-id'],
     credentials: true,
   });
 

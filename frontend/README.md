@@ -1,27 +1,99 @@
-# Web
+# Depósito Dental Virtual Pitalito — Frontend Angular
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.17.
+## Arranque rápido (completo)
 
-## Development server
+```bash
+# 1. Backend
+cd dental-fixed
+cp .env.example .env          # Configurar MONGODB_URI con tu cluster Atlas
+npm install
+npm run seed                  # ← Poblar DB con 30 productos dentales + 4 usuarios
+npm run dev                   # → http://localhost:3000
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+# 2. Frontend
+cd deposito-dental
+npm install
+ng serve                      # → http://localhost:4200
+```
 
-## Code scaffolding
+## Credenciales de prueba (post-seed)
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+| Email | Contraseña | Rol |
+|-------|-----------|-----|
+| admin@dentalpitalito.com | Admin2024! | Admin |
+| doctor@clinicapitalito.com | Doctor2024! | Cliente |
+| laura.ortiz@gmail.com | Laura2024! | Cliente |
+| estudiante.odonto@ucc.edu.co | Estudiante2024! | Cliente |
 
-## Build
+## Configuración de Google Sign-In
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+El login con Google requiere un **Google Client ID** de Google Cloud Console:
 
-## Running unit tests
+1. Ir a [console.cloud.google.com](https://console.cloud.google.com)
+2. **APIs & Services → Credentials → Create Credentials → OAuth 2.0 Client ID**
+3. Application type: **Web application**
+4. Authorized JavaScript origins: `http://localhost:4200`
+5. Copiar el Client ID (formato: `xxxx.apps.googleusercontent.com`)
+6. Pegarlo en `src/environments/environment.ts`:
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+```typescript
+export const environment = {
+  production: false,
+  apiUrl: 'http://localhost:3000',
+  googleClientId: 'TU-CLIENT-ID.apps.googleusercontent.com',
+};
+```
 
-## Running end-to-end tests
+Sin el Client ID configurado, el botón de Google muestra un mensaje indicando los pasos. El login local funciona siempre sin configuración extra.
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+## Endpoints consumidos
 
-## Further help
+| Servicio | Método | Endpoint | Descripción |
+|----------|--------|----------|-------------|
+| **Auth** | POST | `/auth/register` | Registro local |
+| | POST | `/auth/login` | Login local |
+| | POST | `/auth/google` | Login con Google |
+| | GET | `/auth/me` | Verificar sesión |
+| **Catálogo** | GET | `/products` | Listar (con filtros) |
+| | GET | `/products/search?q=` | Búsqueda texto |
+| | GET | `/products/categories` | Categorías con conteo |
+| | GET | `/products/:id` | Ficha de producto |
+| **Carrito** | GET | `/cart` | Ver carrito |
+| | POST | `/cart/items` | Agregar producto |
+| | PATCH | `/cart/items/:itemId` | Cambiar cantidad |
+| | DELETE | `/cart/items/:itemId` | Eliminar ítem |
+| **Órdenes** | POST | `/orders/checkout` | Crear orden |
+| | GET | `/orders/my` | Historial del usuario |
+| **Admin** | GET/POST/PUT/DELETE | `/admin/products[/:id]` | CRUD productos |
+| | GET | `/admin/orders` | Todas las órdenes |
+| | PATCH | `/admin/orders/:id/status` | Cambiar estado |
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+## Estructura
+
+```
+src/app/
+├── components/
+│   ├── navbar/          → nav + búsqueda + dropdown categorías
+│   ├── footer/          → pie de página
+│   ├── odontobot/       → chatbot flotante (UI base)
+│   └── product-card/    → tarjeta reutilizable
+├── interceptors/
+│   └── auth.interceptor.ts  → JWT + x-user-id automáticos
+├── models/
+│   └── product.model.ts     → interfaces alineadas con backend
+├── pages/
+│   ├── home/            → hero + categorías + productos destacados
+│   ├── catalog/         → filtros + grid + búsqueda
+│   ├── product-detail/  → ficha + INVIMA + materiales + carrito
+│   ├── cart/            → carrito + checkout + historial + favoritos
+│   └── auth/            → login/registro + Google Sign-In
+├── services/
+│   ├── auth.service.ts        → login, registro, JWT, sesión
+│   ├── google-auth.service.ts → Google Identity Services SDK
+│   ├── product.service.ts     → catálogo, búsqueda, favoritos
+│   ├── cart.service.ts        → CRUD carrito vía API
+│   └── order.service.ts       → checkout + historial
+└── environments/
+    ├── environment.ts         → dev (localhost:3000)
+    └── environment.prod.ts    → producción
+```
