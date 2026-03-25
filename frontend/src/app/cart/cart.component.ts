@@ -35,15 +35,14 @@ export class CartComponent implements OnInit {
   constructor(private readonly http: HttpClient) {}
 
   ngOnInit(): void {
+    this.loadCart();
+    const updated = sessionStorage.getItem('cartUpdated');
 
-  this.loadCart();
-  const updated = sessionStorage.getItem('cartUpdated');
-
-  if (updated === 'true') {
-    this.loadCart(); 
-    sessionStorage.removeItem('cartUpdated'); 
+    if (updated === 'true') {
+      this.loadCart();
+      sessionStorage.removeItem('cartUpdated');
+    }
   }
-}
 
   loadCart(): void {
     this.loading = true;

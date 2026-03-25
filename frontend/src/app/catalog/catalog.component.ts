@@ -11,7 +11,7 @@ interface Product {
   imageUrl: string;
   category: string;
   stock: number;
-  technicalSpecs?: Record<string, string>; 
+  technicalSpecs?: Record<string, string>;
   invimaRegistry: string;
 }
 
@@ -65,18 +65,20 @@ export class CatalogComponent implements OnInit {
     }
   }
 
- addToCart(product: Product, event: Event): void {
-  event.stopPropagation();
+  addToCart(product: Product, event: Event): void {
+    event.stopPropagation();
 
-  this.http.post(`${this.apiUrl}/cart/items`, {
-    productId: product.id,
-    quantity: 1,
-  }).subscribe({
-    next: () => {
-      sessionStorage.setItem('cartUpdated', 'true');
-      alert('Producto agregado al carrito');
-    },
-    error: () => alert('Error al agregar al carrito'),
-  });
+    this.http
+      .post(`${this.apiUrl}/cart/items`, {
+        productId: product.id,
+        quantity: 1,
+      })
+      .subscribe({
+        next: () => {
+          sessionStorage.setItem('cartUpdated', 'true');
+          alert('Producto agregado al carrito');
+        },
+        error: () => alert('Error al agregar al carrito'),
+      });
   }
 }

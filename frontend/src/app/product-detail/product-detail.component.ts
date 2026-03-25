@@ -31,7 +31,7 @@ export class ProductDetailComponent implements OnInit {
 
   constructor(
     private readonly route: ActivatedRoute,
-    private readonly http: HttpClient
+    private readonly http: HttpClient,
   ) {}
 
   ngOnInit(): void {
@@ -60,19 +60,21 @@ export class ProductDetailComponent implements OnInit {
       value,
     }));
   }
-  
+
   addToCart(): void {
     if (!this.product) return;
 
-    this.http.post(`${this.apiUrl}/cart/items`, {
-      productId: this.product.id,
-      quantity: 1,
-    }).subscribe({
-      next: () => {
-      sessionStorage.setItem('cartUpdated', 'true');
-      alert('Producto agregado al carrito');
-    },
-    error: () => alert('Error al agregar al carrito'),
-  });
+    this.http
+      .post(`${this.apiUrl}/cart/items`, {
+        productId: this.product.id,
+        quantity: 1,
+      })
+      .subscribe({
+        next: () => {
+          sessionStorage.setItem('cartUpdated', 'true');
+          alert('Producto agregado al carrito');
+        },
+        error: () => alert('Error al agregar al carrito'),
+      });
   }
 }
