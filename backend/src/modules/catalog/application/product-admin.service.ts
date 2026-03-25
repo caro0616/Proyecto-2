@@ -31,6 +31,10 @@ export class ProductAdminService {
     return this.productRepo.findAll();
   }
 
+  async findById(id: string): Promise<Product | null> {
+    return this.productRepo.findById(id);
+  }
+
   async update(id: string, dto: UpdateProductDto): Promise<Product> {
     const product = await this.productRepo.findById(id);
     if (!product) {

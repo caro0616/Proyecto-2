@@ -76,7 +76,8 @@ export class MongooseProductRepository implements IProductRepository {
 
   async save(product: Product): Promise<void> {
     const data = {
-      sku: product.sku || `SKU-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+      sku:
+        product.sku || `SKU-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
       name: product.name,
       description: product.description,
       price: product.price,
@@ -99,6 +100,20 @@ export class MongooseProductRepository implements IProductRepository {
     if (Types.ObjectId.isValid(id)) {
       await this.productModel.findByIdAndDelete(id).exec();
     }
+  }
+
+  async decreaseStockAtomic(id: string, quantity: number): Promise<boolean> {
+    if (!Types.ObjectId.isValid(id)) return false;
+
+    const result = await this.productModel
+      .findOneAndUpdate(
+        { _id: id, stock: { $gte: quantity } },
+        { $inc: { stock: -quantity } },
+        { new: true },
+      )
+      .exec();
+
+    return result !== null;
   }
 
   // ─── Mapping helpers ────────────────────────────────────────────────────────

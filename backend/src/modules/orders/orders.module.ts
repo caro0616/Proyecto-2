@@ -16,12 +16,15 @@ import { OrderDoc, OrderSchema } from './infrastructure/persistence/schemas/orde
 import { CartController } from './presentation/cart.controller';
 import { OrdersController } from './presentation/orders.controller';
 
+import { CatalogModule } from '../catalog/catalog.module';
+
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: CartDoc.name, schema: CartSchema },
       { name: OrderDoc.name, schema: OrderSchema },
     ]),
+    CatalogModule,
   ],
   controllers: [CartController, OrdersController],
   providers: [

@@ -13,6 +13,7 @@ export interface IProductRepository {
   countByCategories(): Promise<Record<string, number>>;
   save(product: Product): Promise<void>;
   delete(id: string): Promise<void>;
+  decreaseStockAtomic(id: string, quantity: number): Promise<boolean>;
 }
 
 // ─── In-memory implementation (kept for unit tests / local dev without DB) ────
@@ -53,6 +54,13 @@ export class InMemoryProductRepository implements IProductRepository {
   async delete(id: string): Promise<void> {
     this.products.delete(id);
   }
+
+  async decreaseStockAtomic(id: string, quantity: number): Promise<boolean> {
+    const product = this.products.get(id);
+    if (!product || product.stock < quantity) return false;
+    product.stock -= quantity;
+    return true;
+  }
 }
 
 /**
@@ -67,4 +75,5 @@ export abstract class ProductRepository implements IProductRepository {
   abstract countByCategories(): Promise<Record<string, number>>;
   abstract save(product: Product): Promise<void>;
   abstract delete(id: string): Promise<void>;
+  abstract decreaseStockAtomic(id: string, quantity: number): Promise<boolean>;
 }
