@@ -1,8 +1,6 @@
 import { Product } from '../domain/product.entity';
 
-/**
- * Injection token for the product repository.
- */
+/** Injection token for the product repository. */
 export const PRODUCT_REPOSITORY = Symbol('IProductRepository');
 
 export interface IProductRepository {
@@ -10,13 +8,15 @@ export interface IProductRepository {
   findActive(): Promise<Product[]>;
   findById(id: string): Promise<Product | null>;
   findByCategory(category: string): Promise<Product[]>;
+  /** US-03: búsqueda de texto completo por nombre o referencia */
+  search(query: string): Promise<Product[]>;
   countByCategories(): Promise<Record<string, number>>;
   save(product: Product): Promise<void>;
   delete(id: string): Promise<void>;
   decreaseStockAtomic(id: string, quantity: number): Promise<boolean>;
 }
 
-// ─── In-memory implementation (kept for unit tests / local dev without DB) ────
+// ─── In-memory implementation (unit tests / local dev without DB) ─────────────
 
 export class InMemoryProductRepository implements IProductRepository {
   private readonly products = new Map<string, Product>();
@@ -37,12 +37,24 @@ export class InMemoryProductRepository implements IProductRepository {
     return Array.from(this.products.values()).filter((p) => p.active && p.category === category);
   }
 
+  async search(query: string): Promise<Product[]> {
+    const lower = query.toLowerCase();
+    return Array.from(this.products.values()).filter(
+      (p) =>
+        p.active &&
+        (p.name.toLowerCase().includes(lower) ||
+          p.description.toLowerCase().includes(lower) ||
+          p.sku.toLowerCase().includes(lower) ||
+          p.brand.toLowerCase().includes(lower)),
+    );
+  }
+
   async countByCategories(): Promise<Record<string, number>> {
     const counts: Record<string, number> = {};
     const products = Array.from(this.products.values()).filter((p) => p.active);
     for (const product of products) {
       const cat = product.category as string;
-      counts[cat] = (counts[cat] || 0) + 1;
+      counts[cat] = (counts[cat] ?? 0) + 1;
     }
     return counts;
   }
@@ -61,19 +73,4 @@ export class InMemoryProductRepository implements IProductRepository {
     product.stock -= quantity;
     return true;
   }
-}
-
-/**
- * @deprecated Use PRODUCT_REPOSITORY injection token instead.
- * Kept as abstract class so existing service constructors compile without changes.
- */
-export abstract class ProductRepository implements IProductRepository {
-  abstract findAll(): Promise<Product[]>;
-  abstract findActive(): Promise<Product[]>;
-  abstract findById(id: string): Promise<Product | null>;
-  abstract findByCategory(category: string): Promise<Product[]>;
-  abstract countByCategories(): Promise<Record<string, number>>;
-  abstract save(product: Product): Promise<void>;
-  abstract delete(id: string): Promise<void>;
-  abstract decreaseStockAtomic(id: string, quantity: number): Promise<boolean>;
 }

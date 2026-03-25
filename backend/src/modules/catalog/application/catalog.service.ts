@@ -14,33 +14,69 @@ export class CatalogService {
     private readonly productRepo: IProductRepository,
   ) {}
 
+  /** US-01: catálogo público de productos activos con stock disponible */
   async getPublicCatalog(): Promise<Product[]> {
     return this.productRepo.findActive();
   }
 
+  /** US-05 / US-06: ficha técnica completa de un producto */
   async getProductById(id: string): Promise<Product> {
     const product = await this.productRepo.findById(id);
     if (!product || !product.active) {
-      throw new NotFoundException(`Product ${id} not found`);
+      throw new NotFoundException(`Producto ${id} no encontrado`);
     }
     return product;
   }
 
+  /** US-02: filtrado por categoría */
   async getByCategory(category: string): Promise<Product[]> {
     return this.productRepo.findByCategory(category);
   }
 
-  /**
-   * Obtiene todas las categorías con el conteo de productos activos.
-   * @returns Lista de categorías con productCount
-   */
-  async getCategoriesWithCount(): Promise<CategoryWithCount[]> {
-    const categories = DENTAL_CATEGORIES;
-    const counts = await this.productRepo.countByCategories();
+  /** US-03: búsqueda por nombre o referencia (búsquedas parciales incluidas) */
+  async search(query: string): Promise<Product[]> {
+    if (!query || query.trim().length === 0) {
+      return this.productRepo.findActive();
+    }
+    return this.productRepo.search(query.trim());
+  }
 
-    return categories.map((cat) => ({
+  /** US-04: filtros combinados — categoría y/o disponibilidad */
+  async filter(params: {
+    category?: string;
+    available?: boolean;
+    minPrice?: number;
+    maxPrice?: number;
+  }): Promise<Product[]> {
+    let products: Product[];
+
+    if (params.category) {
+      products = await this.productRepo.findByCategory(params.category);
+    } else {
+      products = await this.productRepo.findActive();
+    }
+
+    if (params.available === true) {
+      products = products.filter((p) => p.isAvailable());
+    }
+
+    if (params.minPrice !== undefined) {
+      products = products.filter((p) => p.price >= (params.minPrice as number));
+    }
+
+    if (params.maxPrice !== undefined) {
+      products = products.filter((p) => p.price <= (params.maxPrice as number));
+    }
+
+    return products;
+  }
+
+  /** US-02: categorías con conteo de productos activos */
+  async getCategoriesWithCount(): Promise<CategoryWithCount[]> {
+    const counts = await this.productRepo.countByCategories();
+    return DENTAL_CATEGORIES.map((cat) => ({
       ...cat,
-      productCount: counts[cat.slug] || 0,
+      productCount: counts[cat.slug] ?? 0,
     }));
   }
 }

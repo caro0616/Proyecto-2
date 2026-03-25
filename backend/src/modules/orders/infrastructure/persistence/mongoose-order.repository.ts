@@ -22,21 +22,28 @@ export class MongooseOrderRepository implements IOrderRepository {
       .sort({ createdAt: -1 })
       .lean<Array<OrderDoc & { _id: Types.ObjectId }>>()
       .exec();
-
     return docs.map((doc) => this.toDomain(doc));
   }
 
   async findById(id: string): Promise<Order | null> {
     if (!Types.ObjectId.isValid(id)) return null;
-
     const doc = await this.orderModel
       .findById(id)
       .lean<OrderDoc & { _id: Types.ObjectId }>()
       .exec();
-
     if (!doc) return null;
-
     return this.toDomain(doc);
+  }
+
+  /** US-10: historial de órdenes de un usuario específico */
+  async findByUserId(userId: string): Promise<Order[]> {
+    if (!Types.ObjectId.isValid(userId)) return [];
+    const docs = await this.orderModel
+      .find({ userId: new Types.ObjectId(userId) })
+      .sort({ createdAt: -1 })
+      .lean<Array<OrderDoc & { _id: Types.ObjectId }>>()
+      .exec();
+    return docs.map((doc) => this.toDomain(doc));
   }
 
   async save(order: Order): Promise<void> {
@@ -58,22 +65,14 @@ export class MongooseOrderRepository implements IOrderRepository {
     }));
 
     if (Types.ObjectId.isValid(order.id)) {
-      // Update existing document (e.g. status change)
       await this.orderModel
         .findByIdAndUpdate(
           order.id,
-          {
-            $set: {
-              status: order.status,
-              statusHistory,
-              updatedAt: new Date(),
-            },
-          },
+          { $set: { status: order.status, statusHistory, updatedAt: new Date() } },
           { new: true },
         )
         .exec();
     } else {
-      // Create new document (checkout flow — id is a UUID from the domain layer)
       const created = await this.orderModel.create({
         userId: Types.ObjectId.isValid(order.userId)
           ? new Types.ObjectId(order.userId)
@@ -83,9 +82,6 @@ export class MongooseOrderRepository implements IOrderRepository {
         status: order.status,
         statusHistory,
       });
-
-      // Reflect the persisted ObjectId back onto the domain object so callers
-      // can use the real database id immediately after save().
       (order as { id: string }).id = (created._id as Types.ObjectId).toHexString();
     }
   }

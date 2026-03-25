@@ -1,29 +1,73 @@
-import { Controller, Get, Param, Patch, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Body,
+  Headers,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { OrderService } from '../application/order.service';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 
+/**
+ * Controlador de órdenes.
+ *
+ * Autenticación: se espera el header `x-user-id` en los endpoints de usuario
+ * y `x-admin-id` en los endpoints de administrador.
+ * Se reemplazarán por JwtAuthGuard + RolesGuard cuando el módulo auth esté completo.
+ */
 @Controller()
 export class OrdersController {
   constructor(private readonly orderService: OrderService) {}
 
-  // TODO: replace hardcoded user/admin ids with real authentication
-  private readonly demoUserId = 'demo-user';
-  private readonly demoAdminId = 'demo-admin';
-
-  @Post('orders/checkout')
-  async checkout() {
-    const order = await this.orderService.checkout(this.demoUserId);
-    return order;
+  private extractHeader(headers: Record<string, string>, key: string): string {
+    const value = headers[key];
+    if (!value) {
+      throw new UnauthorizedException(`Header ${key} es requerido`);
+    }
+    return value;
   }
 
+  /**
+   * US-10: finalizar compra.
+   * Crea la orden, decrementa inventario y vacía el carrito.
+   */
+  @Post('orders/checkout')
+  async checkout(@Headers() headers: Record<string, string>) {
+    const userId = this.extractHeader(headers, 'x-user-id');
+    return this.orderService.checkout(userId);
+  }
+
+  /**
+   * US-10: historial de órdenes del usuario autenticado.
+   * Devuelve las órdenes más recientes primero.
+   */
+  @Get('orders/my')
+  async getMyOrders(@Headers() headers: Record<string, string>) {
+    const userId = this.extractHeader(headers, 'x-user-id');
+    return this.orderService.getUserOrders(userId);
+  }
+
+  /** US-24: listar todas las órdenes (admin) */
   @Get('admin/orders')
-  async listAll() {
+  async listAll(@Headers() headers: Record<string, string>) {
+    this.extractHeader(headers, 'x-admin-id');
     return this.orderService.listAll();
   }
 
+  /**
+   * US-24: cambiar estado de una orden.
+   * Mantiene historial completo de transiciones.
+   */
   @Patch('admin/orders/:id/status')
-  async updateStatus(@Param('id') id: string, @Body() body: UpdateOrderStatusDto) {
-    const order = await this.orderService.updateStatus(id, body.status, this.demoAdminId);
-    return order;
+  async updateStatus(
+    @Headers() headers: Record<string, string>,
+    @Param('id') id: string,
+    @Body() body: UpdateOrderStatusDto,
+  ) {
+    const adminId = this.extractHeader(headers, 'x-admin-id');
+    return this.orderService.updateStatus(id, body.status, adminId);
   }
 }

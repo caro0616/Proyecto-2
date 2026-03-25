@@ -1,8 +1,10 @@
-import { IsString, IsNumber, IsOptional, IsBoolean, Min } from 'class-validator';
+import { IsString, IsNumber, IsOptional, IsBoolean, Min, IsEnum, MaxLength } from 'class-validator';
+import { ProductCategory } from '../../domain/product.entity';
 
 export class UpdateProductDto {
   @IsOptional()
   @IsString()
+  @MaxLength(200)
   name?: string;
 
   @IsOptional()
@@ -19,8 +21,8 @@ export class UpdateProductDto {
   imageUrl?: string;
 
   @IsOptional()
-  @IsString()
-  category?: string;
+  @IsEnum(['instrumental', 'materiales', 'equipos', 'consumibles', 'proteccion', 'otros'])
+  category?: ProductCategory;
 
   @IsOptional()
   @IsNumber()
@@ -30,4 +32,20 @@ export class UpdateProductDto {
   @IsOptional()
   @IsBoolean()
   active?: boolean;
+
+  @IsOptional()
+  @IsString()
+  brand?: string;
+
+  @IsOptional()
+  @IsString()
+  invima?: string;
+
+  @IsOptional()
+  @IsString()
+  materials?: string;
+
+  @IsOptional()
+  @IsString()
+  dimensions?: string;
 }

@@ -19,7 +19,7 @@ const PRODUCT_CATEGORIES: ProductCategory[] = [
   timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
 })
 export class ProductDoc {
-  @Prop({ required: false, unique: true, trim: true, uppercase: true })
+  @Prop({ required: false, unique: true, sparse: true, trim: true, uppercase: true })
   sku!: string;
 
   @Prop({ required: true, trim: true })
@@ -51,13 +51,27 @@ export class ProductDoc {
   @Prop({ required: true, default: true })
   active!: boolean;
 
+  /** Número de registro INVIMA — US-06 */
+  @Prop({ default: '' })
+  invima!: string;
+
+  /** Descripción de materiales para ficha técnica — US-05 */
+  @Prop({ default: '' })
+  materials!: string;
+
+  /** Dimensiones del producto para ficha técnica — US-05 */
+  @Prop({ default: '' })
+  dimensions!: string;
+
   createdAt?: Date;
   updatedAt?: Date;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(ProductDoc);
 
+// Índices para búsqueda eficiente
 ProductSchema.index({ category: 1 });
 ProductSchema.index({ active: 1 });
 ProductSchema.index({ price: 1 });
-ProductSchema.index({ name: 'text', description: 'text' });
+// Texto completo para US-03 (búsqueda por nombre/referencia)
+ProductSchema.index({ name: 'text', description: 'text', brand: 'text', sku: 'text' });

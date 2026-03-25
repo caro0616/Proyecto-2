@@ -24,6 +24,7 @@ import { CatalogModule } from '../catalog/catalog.module';
       { name: CartDoc.name, schema: CartSchema },
       { name: OrderDoc.name, schema: OrderSchema },
     ]),
+    // CatalogModule exporta PRODUCT_REPOSITORY — necesario en CartService y OrderService
     CatalogModule,
   ],
   controllers: [CartController, OrdersController],

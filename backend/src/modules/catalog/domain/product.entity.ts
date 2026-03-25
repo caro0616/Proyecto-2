@@ -18,6 +18,12 @@ export class Product {
     public active: boolean = true,
     public sku: string = '',
     public brand: string = '',
+    /** Número de registro INVIMA (US-06) */
+    public invima: string = '',
+    /** Descripción de materiales para ficha técnica (US-05) */
+    public materials: string = '',
+    /** Dimensiones del producto para ficha técnica (US-05) */
+    public dimensions: string = '',
   ) {}
 
   isAvailable(): boolean {
